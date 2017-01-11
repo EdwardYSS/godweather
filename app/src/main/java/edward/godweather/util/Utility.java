@@ -3,6 +3,8 @@ package edward.godweather.util;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +15,7 @@ import java.util.List;
 import edward.godweather.db.City;
 import edward.godweather.db.County;
 import edward.godweather.db.Province;
+import edward.godweather.gson.Weather;
 
 /**
  * Created by Administrator on 2017/1/10 0010.
@@ -100,6 +103,23 @@ public class Utility {
             }
         }
         return list;
+    }
+
+    /***
+     * 解析天气json 方法
+     */
+
+    public static Weather handleWeatherResponse(String response){
+
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
