@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edward.godweather.MainActivity;
 import edward.godweather.R;
 import edward.godweather.WeatherActivity;
 import edward.godweather.db.City;
@@ -82,10 +83,17 @@ public class ChooseAreaFragment extends Fragment {
                 }else if (currentLevel == LEVEL_COUNTY){
 
                     String weatherId = countyList.get(position).getWeatherId();
+                    if (getActivity() instanceof MainActivity){
                     Intent intent = new Intent(getActivity(), WeatherActivity.class);
                     intent.putExtra("weather_id",weatherId);
                     startActivity(intent);
                     getActivity().finish();
+                    }else if (getActivity() instanceof WeatherActivity){//用 instanceof 来判断碎片在哪个activity中
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefreshLayout.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
                 }
             }
         });

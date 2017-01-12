@@ -13,12 +13,23 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         />
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/dra_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
     <ScrollView
         android:id="@+id/scro"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
         android:overScrollMode="never"
+        android:fitsSystemWindows="true"
         >
         <LinearLayout
             android:orientation="vertical"
@@ -27,7 +38,7 @@
             android:fitsSystemWindows="true"
             >
 
-            <include layout="@layout/title"/>
+            <include layout="@layout/title" />
             <include layout="@layout/now"/>
             <include layout="@layout/forecast"/>
             <include layout="@layout/api"/>
@@ -35,5 +46,13 @@
 
         </LinearLayout>
     </ScrollView>
-
+    </android.support.v4.widget.SwipeRefreshLayout>
+        <fragment
+            android:id="@+id/choose_area_fragment"
+            android:name="edward.godweather.fragment.ChooseAreaFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            />
+    </android.support.v4.widget.DrawerLayout>
 </FrameLayout>
