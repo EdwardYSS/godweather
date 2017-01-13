@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import java.util.List;
 import edward.godweather.MainActivity;
 import edward.godweather.R;
 import edward.godweather.WeatherActivity;
+import edward.godweather.address.Address;
 import edward.godweather.db.City;
 import edward.godweather.db.County;
 import edward.godweather.db.Province;
@@ -82,17 +84,18 @@ public class ChooseAreaFragment extends Fragment {
                     queryCounty();
                 }else if (currentLevel == LEVEL_COUNTY){
 
-                    String weatherId = countyList.get(position).getWeatherId();
+                    final String weatherId = countyList.get(position).getWeatherId();
                     if (getActivity() instanceof MainActivity){
                     Intent intent = new Intent(getActivity(), WeatherActivity.class);
                     intent.putExtra("weather_id",weatherId);
                     startActivity(intent);
                     getActivity().finish();
                     }else if (getActivity() instanceof WeatherActivity){//用 instanceof 来判断碎片在哪个activity中
-                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        final WeatherActivity activity = (WeatherActivity) getActivity();
                         activity.drawerLayout.closeDrawers();
                         activity.swipeRefreshLayout.setRefreshing(true);
                         activity.requestWeather(weatherId);
+                        activity.changeWeatherId = weatherId;
                     }
                 }
             }
@@ -124,7 +127,7 @@ public class ChooseAreaFragment extends Fragment {
             lv.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
         }else{
-            String address = "http://guolin.tech/api/china";
+            String address = Address.CITY_ADD;
             queryFromServer(address,"province");
         }
     }
@@ -144,7 +147,7 @@ public class ChooseAreaFragment extends Fragment {
             currentLevel=LEVEL_CITY;
         }else{
             int provinceCode= selectProvince.getProvinceCode();
-            String address = "http://guolin.tech/api/china/"+provinceCode;
+            String address = Address.CITY_ADD+"/"+provinceCode;
             queryFromServer(address ,"city");
         }
     }
@@ -155,6 +158,7 @@ public class ChooseAreaFragment extends Fragment {
         //countyList = DataSupport.where("cityId = ?", String.valueOf(selectCity.getId())).find(County.class);
         //Log.e("main",""+countyList.size()+selectCity.getId()+"");
         //countyList = Utility.list;
+        //由于上面那个查询不出 所以才有这种方式
         if (countyList.size()>0) {
             if (countyList.get(0).getCityId() != selectCity.getId()) {
                 countyList.clear();
@@ -171,7 +175,7 @@ public class ChooseAreaFragment extends Fragment {
         }else {
             int provinceCode = selectProvince.getProvinceCode();
             int cityCode = selectCity.getCityCode();
-            String address = "http://guolin.tech/api/china/"+provinceCode+"/"+cityCode;
+            String address =Address.CITY_ADD+"/"+provinceCode+"/"+cityCode;
             queryFromServer(address,"county");
         }
 

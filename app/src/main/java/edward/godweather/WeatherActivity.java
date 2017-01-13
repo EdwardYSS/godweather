@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -23,10 +24,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 
+import edward.godweather.address.Address;
 import edward.godweather.gson.Forecast;
 import edward.godweather.gson.Weather;
 import edward.godweather.service.AutoUpdateService;
@@ -46,6 +47,7 @@ public class WeatherActivity extends AppCompatActivity {
     public SwipeRefreshLayout swipeRefreshLayout;
     public DrawerLayout drawerLayout;
     private Button navButton;
+    public String changeWeatherId;
 
     /***
      * 这种方法背景图片没有侵入状态栏
@@ -114,12 +116,18 @@ public class WeatherActivity extends AppCompatActivity {
             weatherId = getIntent().getStringExtra("weather_id");
             scrollView.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
+
         }
 
+        //下拉刷新
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                if (changeWeatherId == null){
                 requestWeather(weatherId);
+                }else {
+                    requestWeather(changeWeatherId);
+                }
             }
         });
 
@@ -131,9 +139,10 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    //传入 weatherid 得到weather 对象
     public void requestWeather(final String weatherId){
 
-        String weatherUrl = "http:guolin.tech/api/weather?cityid="+ weatherId +"&key=4edba204eb48466495023d638364fd74";
+        String weatherUrl =Address.WEATHER_ADD+ weatherId +Address.APP_KEY;
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -160,6 +169,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather",responseText);
                             editor.apply();
                             showWeatherInfo(weaher);
+
                         }else{
                             Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
                         }
@@ -170,6 +180,7 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
+    //显示天气信息
     private void showWeatherInfo(Weather weather) {
 
         if (weather != null && "ok".equals(weather.status)) {
@@ -200,6 +211,9 @@ public class WeatherActivity extends AppCompatActivity {
             if (weather.aqi != null) {
                 aqiText.setText(weather.aqi.city.aqi);
                 pm25Text.setText(weather.aqi.city.pm25);
+            }else{
+                aqiText.setText("无数据");
+                pm25Text.setText("无数据");
             }
             String comfort = "舒适度: " + weather.suggestion.comfort.info;
             String carWash = "洗车指数: " + weather.suggestion.carWash.info;
@@ -208,6 +222,7 @@ public class WeatherActivity extends AppCompatActivity {
             comfortText.setText(comfort);
             carWashText.setText(carWash);
             sportText.setText(sport);
+            scrollView.setVisibility(View.VISIBLE);
 
             Intent intent = new Intent(this, AutoUpdateService.class);
             startService(intent);
@@ -216,8 +231,9 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    //得到背景图片
     private void loadBgImg(){
-        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        String requestBingPic = Address.BGIMG_ADD;
         HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 
 import java.io.IOException;
 
+import edward.godweather.address.Address;
 import edward.godweather.gson.Weather;
 import edward.godweather.util.HttpUtil;
 import edward.godweather.util.Utility;
@@ -33,7 +34,7 @@ public class AutoUpdateService extends Service {
         updateBinpic();
         updateWeather();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int anHour = 8*60*60*1000;
+        int anHour = 3*60*60*1000;
         long triggerAtTime = SystemClock.elapsedRealtime()+anHour;
         Intent i = new Intent(this,AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this,0,i,0);
@@ -50,7 +51,7 @@ public class AutoUpdateService extends Service {
 
             Weather weather = Utility.handleWeatherResponse(weatherString);
             String weatherId = weather.basic.weatherId;
-            String weatherUrl = "http://guolin.tech/api/weather?cityid="+weatherId+"&key=4edba204eb48466495023d638364fd74";
+            String weatherUrl = Address.WEATHER_ADD+weatherId+Address.APP_KEY;
             HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -74,7 +75,7 @@ public class AutoUpdateService extends Service {
 
     private void updateBinpic(){
 
-        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        String requestBingPic =Address.BGIMG_ADD;
         HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
