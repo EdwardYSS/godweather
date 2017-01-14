@@ -58,7 +58,7 @@ public class WelActivity extends AppCompatActivity {
                 if(!NetworkUtils.isHaveNetWork) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle("为检测到网络");
+                    builder.setTitle("未检测到网络");
                     builder.setMessage("是否去设置网络");
                     builder.setPositiveButton("设置", new DialogInterface.OnClickListener() {
                         @Override
