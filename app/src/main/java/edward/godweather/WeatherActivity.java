@@ -40,7 +40,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private ScrollView scrollView;
     private TextView titleCity,titleUpdateTime,degreeText,weatherInfoText,aqiText,pm25Text,comfortText
-            ,sportText,carWashText;
+            ,sportText,carWashText,drsg_text,flu_text,trav_text,uv_text;
     private LinearLayout forecastLayout;
     private ImageView bg_img;
     public SwipeRefreshLayout swipeRefreshLayout;
@@ -90,6 +90,10 @@ public class WeatherActivity extends AppCompatActivity {
         comfortText = (TextView) findViewById(R.id.comfort_text);
         carWashText = (TextView) findViewById(R.id.carwash_text);
         sportText = (TextView) findViewById(R.id.spory_text);
+        drsg_text = (TextView) findViewById(R.id.flu_text);
+        flu_text = (TextView) findViewById(R.id.drsg_text);
+        trav_text = (TextView) findViewById(R.id.trav_text);
+        uv_text = (TextView) findViewById(R.id.uv_text);
         forecastLayout = (LinearLayout) findViewById(R.id.forecast_ll);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeColors(R.color.colorPrimary);
@@ -104,6 +108,7 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
 
+        //优先从缓存中拿数据
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = pref.getString("weather",null);
         final String weatherId ;
@@ -159,6 +164,7 @@ public class WeatherActivity extends AppCompatActivity {
 
                 final String responseText = response.body().string();
                 final Weather weaher = Utility.handleWeatherResponse(responseText);
+                //只能在主线程更新ui
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -189,7 +195,7 @@ public class WeatherActivity extends AppCompatActivity {
             String degree = weather.now.temperature + "℃";
             String weatherInfo = weather.now.more.info;
             titleCity.setText(cityName);
-            titleUpdateTime.setText(updateTime);
+            titleUpdateTime.setText(updateTime+"发布");
             degreeText.setText(degree);
             weatherInfoText.setText(weatherInfo);
             forecastLayout.removeAllViews();
@@ -218,16 +224,22 @@ public class WeatherActivity extends AppCompatActivity {
             String comfort = "舒适度: " + weather.suggestion.comfort.info;
             String carWash = "洗车指数: " + weather.suggestion.carWash.info;
             String sport = "运动建议: " + weather.suggestion.sport.info;
+            String drsg = "穿衣指数: "+weather.suggestion.drsg.info;
+            String flu = "感冒指数: "+weather.suggestion.flu.info;
+            String trav = "旅游指数: "+weather.suggestion.trav.info;
+            String uv = "紫外线指数: "+weather.suggestion.uv.info;
 
             comfortText.setText(comfort);
             carWashText.setText(carWash);
             sportText.setText(sport);
+            drsg_text.setText(drsg);
+            flu_text.setText(flu);
+            trav_text.setText(trav);
+            uv_text.setText(uv);
             scrollView.setVisibility(View.VISIBLE);
 
             Intent intent = new Intent(this, AutoUpdateService.class);
             startService(intent);
-        }else{
-            Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
         }
     }
 
