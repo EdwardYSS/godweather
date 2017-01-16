@@ -183,7 +183,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private void  queryFromServer(String address,final String type){
         showProgressDialog();
-       // Log.e("main","1");
+
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -191,7 +191,7 @@ public class ChooseAreaFragment extends Fragment {
                     @Override
                     public void run() {
                         closeProgress();
-                       // Log.e("main","2");
+
                         Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -237,13 +237,13 @@ public class ChooseAreaFragment extends Fragment {
             progressDialog.setCanceledOnTouchOutside(false);
         }
         progressDialog.show();
-       // Log.e("main","1");
+
     }
 
     private void closeProgress(){
        if (progressDialog != null){
            progressDialog.dismiss();
-           //Log.e("main","2");
+
        }
     }
 }

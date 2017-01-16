@@ -5,11 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -30,6 +32,7 @@ import edward.godweather.address.Address;
 import edward.godweather.gson.Forecast;
 import edward.godweather.gson.Weather;
 import edward.godweather.service.AutoUpdateService;
+import edward.godweather.util.AcyivityCollector;
 import edward.godweather.util.HttpUtil;
 import edward.godweather.util.Utility;
 import okhttp3.Call;
@@ -47,6 +50,7 @@ public class WeatherActivity extends AppCompatActivity {
     public DrawerLayout drawerLayout;
     private Button navButton;
     public String changeWeatherId;
+    private long backTime = 0;
 
     /***
      * 这种方法背景图片没有侵入状态栏
@@ -100,7 +104,6 @@ public class WeatherActivity extends AppCompatActivity {
         bg_img = (ImageView) findViewById(R.id.bg_img);
         drawerLayout = (DrawerLayout) findViewById(R.id.dra_ll);
         navButton = (Button) findViewById(R.id.nav_button);
-
         navButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,5 +270,21 @@ public class WeatherActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        long currentTime = System.currentTimeMillis();
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawers();
+        }else {
+            if (currentTime - backTime > 2000) {
+                Toast.makeText(this, "再按一次退出应用", Toast.LENGTH_SHORT).show();
+                backTime = currentTime;
+            }else{
+                AcyivityCollector.finishAll();
+            }
+        }
+
     }
 }

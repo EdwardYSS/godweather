@@ -35,6 +35,7 @@ public class AutoUpdateService extends Service {
         updateWeather();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int anHour = 6*60*60*1000;//每六小时更新一次
+        //设置执行的间隔时间 ,SystemClock.elapsedRealtime()是系统启动到现在的时间
         long triggerAtTime = SystemClock.elapsedRealtime()+anHour;
         Intent i = new Intent(this,AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this,0,i,0);
